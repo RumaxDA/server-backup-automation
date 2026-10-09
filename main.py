@@ -58,6 +58,7 @@ def run_as_root_and_handle_nas(channel, command, timeout=3600):
     # Najpierw kończy się su, a dopiero potem powłoka admina
     # wypisuje kod zakończenia i unikalny znacznik.
     remote_command = (
+        f"export TERM=dumb; "
         f"su -l root -c {shlex.quote(command)}; "
         f"rc=$?; printf '\\n{marker}:%s\\n' \"$rc\"\n"
     )
@@ -65,7 +66,6 @@ def run_as_root_and_handle_nas(channel, command, timeout=3600):
     channel.send(remote_command)
 
     pending = ""
-    root_password_sent = False
     password_sent = False
     deadline = time.monotonic() + timeout
 
