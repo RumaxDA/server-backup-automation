@@ -20,9 +20,9 @@ NAS_PASSWORD = os.getenv("NAS_PASSWORD")
 
 # Testowe 
 backup_commands_edicta = [
-    "id -u",
-    "whoami",
-    "exit 7",
+    "scp -P 22 /tmp/edicta_scp_test.txt "
+    "admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/"
+    "192.168.4.246_edicta/test/"
 ]
 
 def run_command_on_edicta(shell, command, nas_password, timeout=3600):
