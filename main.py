@@ -68,11 +68,9 @@ def run_as_root_and_handle_nas(channel, command, timeout=3600):
     password_sent = False
     deadline = time.monotonic() + timeout
 
-    root_password_prompt = "password:".lower()
     password_prompt = f"admin@192.168.4.108's password:".lower()
     marker_pattern = re.compile(re.escape(marker) + r":(\d+)")
 
-    root_password = os.environ['ROOT_PASSWORD']
 
     while time.monotonic() < deadline:
 
@@ -88,26 +86,6 @@ def run_as_root_and_handle_nas(channel, command, timeout=3600):
 
         pending = (pending + chunk)[-8192:]
         lower = pending.lower()
-
-
-
-
-        if (
-            "password:" in lower
-            and "192.168.4.108" not in lower
-            and not root_password_sent
-        ):
-            if not root_password:
-                raise RuntimeError(
-                    "System zażądał hasła do su/root, ale brak zmiennej ROOT_PASSWORD w .env"
-                )
-            channel.send(root_password + "\n")
-            root_password_sent = True
-            pending = ""
-            continue
-
-
-
 
         # Nie akceptujemy automatycznie nieznanego klucza hosta.
         if "are you sure you want to continue connecting" in lower:
