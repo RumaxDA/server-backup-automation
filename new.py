@@ -1,5 +1,6 @@
-from datetime import date
+from datetime import date, timedelta
 
-today_str = date.today().strftime("%Y-%m-%d")
 
-print(today_str)
+yesterday_str = (date.today() - timedelta(days=1)).strftime("%y_%m_%d")
+
+print(yesterday_str)

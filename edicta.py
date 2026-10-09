@@ -4,8 +4,13 @@ import time
 import paramiko
 from dotenv import load_dotenv
 import uuid
+from datetime import date, timedelta
 
 load_dotenv()
+
+yesterday_str = (date.today() - timedelta(days=1)).strftime("%y_%m_%d")
+
+print(yesterday_str)
 
 EDICTA_IP = os.getenv("EDICTA_IP")
 EDICTA_USER = os.getenv("EDICTA_USERNAME")     
@@ -13,17 +18,17 @@ EDICTA_PASSWORD = os.getenv("EDICTA_PASSWORD")
 NAS_PASSWORD = os.getenv("NAS_PASSWORD")       
 
 # Polecenie
-# backup_commands_edicta = [
-#     "scp -P 22 /srv/backup/db/Edicta-SOD_26_10_07*.sql.zip admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.246_edicta/ ",
-#     "scp -P 22 /srv/backup/repo/Edicta-SOD_repository26_10_07*.zip admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.246_edicta/"
-# ]
+backup_commands_edicta = [
+    f"scp -P 22 /srv/backup/db/Edicta-SOD_{yesterday_str}*.sql.zip admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.246_edicta/ ",
+    f"scp -P 22 /srv/backup/repo/Edicta-SOD_repository{yesterday_str}*.zip admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.246_edicta/"
+]
 
 # Testowe 
-backup_commands_edicta = [
-    "scp -P 22 /tmp/edicta_scp_test.txt "
-    "admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/"
-    "192.168.4.246_edicta/test/"
-]
+# backup_commands_edicta = [
+#     "scp -P 22 /tmp/edicta_scp_test.txt "
+#     "admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/"
+#     "192.168.4.246_edicta/test/"
+# ]
 
 def run_command_on_edicta(shell, command, nas_password, timeout=3600):
     """Uruchamia komendę jako root, obsługuje hasło NAS-a
