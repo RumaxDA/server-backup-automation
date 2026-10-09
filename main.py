@@ -30,20 +30,21 @@ servers = [
 ]
 
 # Komendy do wykonania na Pumie
-# backup_commands_puma = [
-#     f"scp -P 22 /srv/samba/backup/JST_PUMA_*{today_str}*.xz admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/",
-#     f"scp -P 22 /srv/samba/backup/PUMA_*{today_str}*.xz admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/",
-#     f"scp -P 22 /srv/samba/backup/LgcDoc/Backup.zpaq.daily admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_S/",
-#     f"scp -P 22 /srv/samba/backup/LgcDoc/Backup.zpaq.daily.sha384 admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_S/",
-#     f"scp -P 22 /srv/samba/backup/LgcDoc.podlegle/Backup.zpaq.daily admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_J/",
-#     f"scp -P 22 /srv/samba/backup/LgcDoc.podlegle/Backup.zpaq.daily.sha384 admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_J/",
-# ]
-
-backup_commands_puma = [    
-    "id -u",
-    "whoami",
-    "exit 7",
+backup_commands_puma = [
+    f"scp -P 22 /srv/samba/backup/JST_PUMA_*{today_str}*.xz admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/",
+    f"scp -P 22 /srv/samba/backup/PUMA_*{today_str}*.xz admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/",
+    f"scp -P 22 /srv/samba/backup/LgcDoc/Backup.zpaq.daily admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_S/",
+    f"scp -P 22 /srv/samba/backup/LgcDoc/Backup.zpaq.daily.sha384 admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_S/",
+    f"scp -P 22 /srv/samba/backup/LgcDoc.podlegle/Backup.zpaq.daily admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_J/",
+    f"scp -P 22 /srv/samba/backup/LgcDoc.podlegle/Backup.zpaq.daily.sha384 admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_J/",
 ]
+
+# Komendy testowe
+# backup_commands_puma = [    
+#     "id -u",
+#     "whoami",
+#     "exit 7",
+# ]
 
 
 def run_as_root_and_handle_nas(channel, command, timeout=3600):
