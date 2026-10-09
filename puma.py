@@ -30,21 +30,21 @@ servers = [
 ]
 
 # Komendy do wykonania na Pumie
-backup_commands_puma = [
-    f"scp -P 22 /srv/samba/backup/JST_PUMA_*{today_str}*.xz admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/",
-    f"scp -P 22 /srv/samba/backup/PUMA_*{today_str}*.xz admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/",
-    f"scp -P 22 /srv/samba/backup/LgcDoc/Backup.zpaq.daily admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_S/",
-    f"scp -P 22 /srv/samba/backup/LgcDoc/Backup.zpaq.daily.sha384 admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_S/",
-    f"scp -P 22 /srv/samba/backup/LgcDoc.podlegle/Backup.zpaq.daily admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_J/",
-    f"scp -P 22 /srv/samba/backup/LgcDoc.podlegle/Backup.zpaq.daily.sha384 admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_J/",
-]
-
-# Komendy testowe
-# backup_commands_puma = [    
-#     "id -u",
-#     "whoami",
-#     "exit 7",
+# backup_commands_puma = [
+#     f"scp -P 22 /srv/samba/backup/JST_PUMA_*{today_str}*.xz admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/",
+#     f"scp -P 22 /srv/samba/backup/PUMA_*{today_str}*.xz admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/",
+#     f"scp -P 22 /srv/samba/backup/LgcDoc/Backup.zpaq.daily admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_S/",
+#     f"scp -P 22 /srv/samba/backup/LgcDoc/Backup.zpaq.daily.sha384 admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_S/",
+#     f"scp -P 22 /srv/samba/backup/LgcDoc.podlegle/Backup.zpaq.daily admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_J/",
+#     f"scp -P 22 /srv/samba/backup/LgcDoc.podlegle/Backup.zpaq.daily.sha384 admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.50_puma/Ldoc_J/",
 # ]
+
+#Komendy testowe
+backup_commands_puma = [    
+    "id -u",
+    "whoami",
+    "exit 7",
+]
 
 
 def run_as_root_and_handle_nas(channel, command, timeout=3600):
@@ -119,45 +119,63 @@ def run_as_root_and_handle_nas(channel, command, timeout=3600):
         f"Przekroczono limit czasu dla polecenia: {command}"
     )
 
-# Główna pętla po serwerach
-for server in servers:
-    print(f"[*] Łączenie z serwerem {server['ip']}...")
+def main():
+    failed = False
 
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    for server in servers:
+        print(f"[*] Łączenie z serwerem {server['ip']}...")
 
-    try:
-        ssh.connect(
-            hostname=server["ip"],
-            username=server["username"],
-            password=server["password"],
-            timeout=10,
-        )
-        print(f"[*] Zalogowano pomyślnie do {server['ip']}")
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        # Otwieramy jedną powłokę interaktywną dla sesji
-        channel = ssh.invoke_shell()
-        time.sleep(1)
+        try:
+            ssh.connect(
+                hostname=server["ip"],
+                username=server["username"],
+                password=server["password"],
+                timeout=10,
+            )
+            print(f"[*] Zalogowano pomyślnie do {server['ip']}")
 
-        if channel.recv_ready():
-            channel.recv(65535)
+            channel = ssh.invoke_shell()
+            time.sleep(1)
 
-        # Wykonujemy backupy tylko dla Pumy
-        if server["ip"] == os.environ["PUMA_IP"]:
-            for command in backup_commands_puma:
-                print(f"\n[*] Uruchamianie polecenia: {command}")
-                exit_status = run_as_root_and_handle_nas(channel, command)
+            if channel.recv_ready():
+                channel.recv(65535)
 
-                if exit_status == 0:
-                    print(f"\n[+] Komenda zakończona sukcesem (kod 0)")
-                else:
-                    print(
-                        f"\n[-] Komenda zwróciła błąd (kod wyjścia: {exit_status})"
+            if server["ip"] == os.environ["PUMA_IP"]:
+                for command in backup_commands_puma:
+                    print(f"\n[*] Uruchamianie polecenia: {command}")
+
+                    exit_status = run_as_root_and_handle_nas(
+                        channel, command
                     )
 
-    except Exception as e:
-        print(f"\n[KRYTYCZNY] Nie udało się przetworzyć serwera {server['ip']}: {e}")
+                    if exit_status == 0:
+                        print("[+] Komenda zakończona sukcesem (kod 0)")
+                    else:
+                        print(
+                            f"[-] Komenda zwróciła błąd "
+                            f"(kod wyjścia: {exit_status})"
+                        )
+                        failed = True
 
-    finally:
-        ssh.close()
-        print(f"[-] Rozłączono z {server['ip']}\n" + "-" * 40)
+        except Exception as e:
+            print(
+                f"\n[KRYTYCZNY] Nie udało się przetworzyć "
+                f"serwera {server['ip']}: {e}"
+            )
+            failed = True
+
+        finally:
+            ssh.close()
+            print(
+                f"[-] Rozłączono z {server['ip']}\n"
+                + "-" * 40
+            )
+
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
