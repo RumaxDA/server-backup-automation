@@ -1,0 +1,17 @@
+# Pliki konfiguracyjne ze wrażliwymi danymi i hasełkami
+.env
+
+# Środowisko wirtualne Pythona (jeśli tworzysz lokalnie w folderze venv)
+venv/
+env/
+ENV/
+
+# Pliki tymczasowe Pythona i cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Logi z działania skryptów
+*.log
