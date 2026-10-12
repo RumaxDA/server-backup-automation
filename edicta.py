@@ -16,15 +16,15 @@ EDICTA_PASSWORD = os.getenv("EDICTA_PASSWORD")
 NAS_PASSWORD = os.getenv("NAS_PASSWORD")       
 
 # Polecenie
-# backup_commands_edicta = [
-#     f"scp -P 22 /srv/backup/db/Edicta-SOD_{yesterday_str}*.sql.zip admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.246_edicta/ ",
-#     f"scp -P 22 /srv/backup/repo/Edicta-SOD_repository{yesterday_str}*.zip admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.246_edicta/"
-# ]
-
 backup_commands_edicta = [
-    "id -u",
-    "whoami",
+    f"scp -P 22 /srv/backup/db/Edicta-SOD_{yesterday_str}*.sql.zip admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.246_edicta/ ",
+    f"scp -P 22 /srv/backup/repo/Edicta-SOD_repository{yesterday_str}*.zip admin@192.168.4.108:/share/CACHEDEV1_DATA/Backup/192.168.4.246_edicta/"
 ]
+
+# backup_commands_edicta = [
+#     "id -u",
+#     "whoami",
+# ]
 
 # Testowe 
 # backup_commands_edicta = [
